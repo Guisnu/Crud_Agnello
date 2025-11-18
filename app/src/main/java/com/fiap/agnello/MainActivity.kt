@@ -3,6 +3,7 @@ package com.fiap.agnello
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -37,19 +38,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.fiap.agnello.ui.theme.Agnnelo_AppTheme
-import androidx.compose.ui.text.font.FontFamily
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Agnnelo_AppTheme {
+            AgnneloAppTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -64,33 +64,29 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
+fun AgnneloAppTheme(content: @Composable () -> Unit) {
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme,
+        typography = MaterialTheme.typography,
+        content = content
+    )
+}
+
+@Composable
 fun CadastroScreen() {
 
-    var nomeState = remember {
-        mutableStateOf("")
-    }
-    
-    var tipoState = remember {
-        mutableStateOf("")
-    }
-    var PrecoState = remember {
-        mutableStateOf("")
-    }
+    var nomeState = remember { mutableStateOf("") }
+    var tipoState = remember { mutableStateOf("") }
+    var precoState = remember { mutableStateOf("") }
 
     Column {
         Vinho(
             nome = nomeState.value,
             tipo = tipoState.value,
-            Preco = PrecoState.value,
-            onNomeChange = {
-                nomeState.value = it
-            },
-            onTipoChange = {
-                tipoState.value = it
-            },
-            onPrecoChange = {
-                PrecoState.value = it
-            },
+            preco = precoState.value,
+            onNomeChange = { nomeState.value = it },
+            onTipoChange = { tipoState.value = it },
+            onPrecoChange = { precoState.value = it },
         )
         VinhoList()
     }
@@ -101,10 +97,10 @@ fun CadastroScreen() {
 fun Vinho(
     nome: String,
     tipo: String,
-    Preco: String,
-    onNomeChange:   (String) -> Unit,
-    onTipoChange:   (String) -> Unit,
-    onPrecoChange:  (String) -> Unit,
+    preco: String,
+    onNomeChange: (String) -> Unit,
+    onTipoChange: (String) -> Unit,
+    onPrecoChange: (String) -> Unit,
 ) {
     val tiposVinho = listOf("Rosé", "Doce", "Seco", "Tinto", "Branco")
     var expanded by remember { mutableStateOf(false) }
@@ -120,10 +116,12 @@ fun Vinho(
             fontFamily = FontFamily.Cursive,
             fontWeight = FontWeight.Bold,
         )
+
         Spacer(modifier = Modifier.height(8.dp))
+
         OutlinedTextField(
             value = nome,
-            onValueChange = { onNomeChange(it) },
+            onValueChange = onNomeChange,
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = "Nome do Vinho") },
             keyboardOptions = KeyboardOptions(
@@ -140,7 +138,7 @@ fun Vinho(
         ) {
             OutlinedTextField(
                 value = tipoSelecionado,
-                onValueChange = { onTipoChange(it) },
+                onValueChange = { },
                 readOnly = true,
                 label = { Text("Tipo de vinho") },
                 trailingIcon = {
@@ -160,21 +158,23 @@ fun Vinho(
                         text = { Text(tipo) },
                         onClick = {
                             tipoSelecionado = tipo
+                            onTipoChange(tipo)
                             expanded = false
                         }
                     )
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(8.dp))
-        // Campo: Preco
+
         OutlinedTextField(
-            value = Preco,
-            onValueChange = { onPrecoChange(it) },
+            value = preco,
+            onValueChange = onPrecoChange,
             modifier = Modifier.fillMaxWidth(),
             label = { Text(text = "Preço do Vinho") },
             keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Phone
+                keyboardType = KeyboardType.Number
             )
         )
 
@@ -182,12 +182,13 @@ fun Vinho(
 
         Button(
             onClick = {
-                println("Cadastrado: $nome | Tipo: $tipoSelecionado")
+                println("Cadastrado: $nome | Tipo: $tipoSelecionado | Preço: $preco")
             },
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF000000), 
+                containerColor = Color.Black,
                 contentColor = Color.White
-            ),            modifier = Modifier.fillMaxWidth()
+            ),
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
                 text = "CADASTRAR",
@@ -199,12 +200,13 @@ fun Vinho(
 
 @Composable
 fun VinhoList() {
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .padding(16.dp)
-        .verticalScroll(rememberScrollState())
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        for (i in 0..3){
+        for (i in 0..3) {
             VinhoCard()
             Spacer(modifier = Modifier.height(4.dp))
         }
@@ -222,9 +224,11 @@ fun VinhoCard() {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier
-                .padding(8.dp)
-                .weight(2f)) {
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(2f)
+            ) {
                 Text(
                     text = "Nome do Vinho",
                     fontSize = 24.sp,
@@ -239,7 +243,7 @@ fun VinhoCard() {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = ""
+                    contentDescription = null
                 )
             }
         }
