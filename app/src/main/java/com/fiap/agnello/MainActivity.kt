@@ -3,7 +3,6 @@ package com.fiap.agnello
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.benchmark.traceprocessor.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.fiap.agnello.ui.theme.AgnneloAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,15 +61,6 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
-}
-
-@Composable
-fun AgnneloAppTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = MaterialTheme.colorScheme,
-        typography = MaterialTheme.typography,
-        content = content
-    )
 }
 
 @Composable
@@ -102,7 +93,7 @@ fun Vinho(
     onTipoChange: (String) -> Unit,
     onPrecoChange: (String) -> Unit,
 ) {
-    val tiposVinho = listOf("Rosé", "Doce", "Seco", "Tinto", "Branco")
+    val tiposVinho = listOf("Rosé", "Suave", "Seco", "Tinto", "Branco")
     var expanded by remember { mutableStateOf(false) }
     var tipoSelecionado by remember { mutableStateOf(tiposVinho[0]) }
 
@@ -235,7 +226,7 @@ fun VinhoCard() {
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "Doce",
+                    text = "Suave",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
