@@ -1,6 +1,7 @@
 package com.fiap.agnello
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -207,15 +208,11 @@ fun VinhoForm(
             onClick = {
                 if (vinhoEditando == null) {
                     vinhoRepository.salvar(Vinho(0, nome, tipo, preco))
+                    Toast.makeText(context, "Vinho $nome cadastrado com sucesso!", Toast.LENGTH_SHORT).show()
                 } else {
                     vinhoRepository.atualizar(
-                        Vinho(
-                            id = vinhoEditando.id,
-                            nome = nome,
-                            tipo = tipo,
-                            preco = preco
-                        )
-                    )
+                        Vinho(id = vinhoEditando.id, nome = nome, tipo = tipo, preco = preco))
+                        Toast.makeText(context, "Vinho $nome atualizado com sucesso!", Toast.LENGTH_SHORT).show()
                 }
                 atualizar()
                 onNomeChange("")
@@ -345,6 +342,7 @@ fun VinhoCard(vinho: Vinho, atualizar: () -> Unit, onClick: (Vinho) -> Unit) {
                 val vinhoRepository = VinhoRepository(context = context)
                 vinhoRepository.excluir(vinho)
                 atualizar()
+                Toast.makeText(context, "Vinho ${vinho.nome} apagado com sucesso!", Toast.LENGTH_SHORT).show()
             }) {
                 Icon(
                     imageVector = Icons.Default.Delete,
